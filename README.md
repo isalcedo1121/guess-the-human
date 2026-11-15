@@ -1,64 +1,78 @@
-# 🎮 Game Glitch Investigator: The Impossible Guesser
+# Guess the Human
 
-## 🚨 The Situation
+A host-led classroom game where participants submit anonymous written answers
+and an audience guesses which answers came from humans or AI. Audience voting
+happens in Zoom chat; the host records the majority choice in the application.
 
-You asked an AI to build a simple "Number Guessing Game" using Streamlit.
-It wrote the code, ran away, and now the game is unplayable. 
+## Current status
 
-- You can't win.
-- The hints lie to you.
-- The secret number seems to have commitment issues.
+Development is proceeding one stage at a time. The FastAPI foundation is in
+place. Rooms, submissions, Firestore, gameplay, and LLM generation are not yet
+implemented. The health endpoint checks only the web process.
 
-## 🛠️ Setup
+## Original project
 
-1. Install dependencies: `pip install -r requirements.txt`
-2. Run the broken app: `python -m streamlit run app.py`
+This project extends **Game Glitch Investigator**, the Module 1 number-guessing
+game. That Streamlit application compared numeric guesses with a secret number
+and displayed hints, attempts, score, and history. Guess the Human redesigns
+guessing, feedback, scoring, difficulty, and progression around Human/AI
+authorship; unrelated numeric rules are not reused.
 
-## 🕵️‍♂️ Your Mission
+The original code and tests remain in Git history, including commit `02afa3b`.
+There is no separate legacy application. `reflection.md` and the original
+entries in `ai_interactions.md` document the earlier project.
 
-1. **Play the game.** Open the "Developer Debug Info" tab in the app to see the secret number. Try to win.
-2. **Find the State Bug.** Why does the secret number change every time you click "Submit"? Ask ChatGPT: *"How do I keep a variable from resetting in Streamlit when I click a button?"*
-3. **Fix the Logic.** The hints ("Higher/Lower") are wrong. Fix them.
-4. **Refactor & Test.** - Move the logic into `logic_utils.py`.
-   - Run `pytest` in your terminal.
-   - Keep fixing until all tests pass!
+| Original component | Current treatment |
+| --- | --- |
+| Streamlit `app.py` | Replaced with a FastAPI entry point. |
+| Numeric `logic_utils.py` and its tests | Removed from the active application; preserved in history. |
+| Git history and pytest configuration | Retained. |
+| Guessing, scoring, feedback, difficulty | Concepts retained; new rules will be implemented in Python. |
 
-## 📝 Document Your Experience
+## Local setup
 
-- [x] **Game purpose:** The game is a number guessing game where the player tries to guess a randomly generated secret number within a limited number of attempts. After each valid guess, the game gives a hint to help the player get closer to the secret number.
+Use Python 3.12 or newer. The initial foundation was tested with Python 3.14.
 
-- [x] **Bugs found:** I found that the higher/lower hints pointed in the wrong direction, numbers outside the allowed range were accepted as guesses, and the attempt counter could end the game too early.
-
-- [x] **Fixes applied:** I moved `check_guess()` and `parse_guess()` into `logic_utils.py`. I corrected the higher/lower hint directions and added validation so guesses outside the current difficulty's range are rejected. I also added pytest tests to verify both fixes.
-
-## 📸 Demo Walkthrough
-
-1. The user starts a game on Normal difficulty, which uses a range of 1–100.
-2. The user enters a guess below the secret number, and the game tells them to go higher.
-3. The user enters a guess above the secret number, and the game tells them to go lower.
-4. If the user enters an out-of-range number such as `0`, the game rejects it and displays `Guess must be between 1 and 100.`
-5. The user continues guessing until they find the secret number or run out of attempts.
-
-**Screenshot** *(optional)*: <!-- Insert a screenshot of your fixed, winning game here -->
-
-## 🧪 Test Results
-
-All 10 automated tests passed using pytest, including three additional edge-case tests for Challenge 1.
-
-```text
-============================= test session starts ==============================
-platform darwin -- Python 3.14.6, pytest-9.1.1, pluggy-1.6.0
-rootdir: /Users/ivansalcedo/repos/ai110-module1show-gameglitchinvestigator-starter
-configfile: pytest.ini
-testpaths: tests
-plugins: anyio-4.15.1
-collected 10 items
-
-tests/test_game_logic.py ..........                                      [100%]
-
-============================== 10 passed in 0.02s ==============================
+```sh
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements-dev.txt
+python -m uvicorn app:app --reload
 ```
 
-## 🚀 Stretch Features
+The server runs at <http://127.0.0.1:8000>. API documentation is available at
+<http://127.0.0.1:8000/docs>.
 
-- [ ] [If you choose to complete Challenge 4, describe the Enhanced UI changes here — a screenshot is optional]
+Environment configuration is optional:
+
+```sh
+cp .env.example .env
+```
+
+Leave the Firebase and LLM values blank. They are reserved configuration fields,
+not working integrations. Never commit `.env`, service-account credentials, or
+API keys. Configuration is read on startup; restart after changing `.env`.
+
+## Checks
+
+```sh
+python -m pytest
+curl http://127.0.0.1:8000/health
+```
+
+The health response is `{"status":"ok"}`. Tests currently cover startup,
+configuration, and the absence of simulated room creation. There are no real
+LLM outputs or end-to-end game results to report yet.
+
+## Planned hosting
+
+One FastAPI application will serve the frontend and API on Render's free tier.
+Shared room data will use Firebase Cloud Firestore's free tier. One real LLM
+provider will be connected after gameplay is implemented. No cloud service,
+billing, deployment, database connection, or LLM request is enabled by this
+foundation.
+
+The official assignment, planning context, and standalone HTML mockup remain
+outside this repository. Later documentation will add the model card, actual
+architecture diagram, and reproducible AI/guardrail evidence when those
+components exist.

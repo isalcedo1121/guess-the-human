@@ -16,7 +16,9 @@ pip-wheel-metadata/
 # Environment and config
 .env
 .env.*
+!.env.example
 *.env
+*service-account*.json
 
 # Streamlit
 .streamlit/secrets.toml
