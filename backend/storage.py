@@ -158,6 +158,26 @@ class RoomStore:
     def answers(self, room_id):
         return [x.to_dict()['answer'] for x in self.rooms.document(room_id).collection('submissions').stream(timeout=10)]
 
+    def remove_answers(self, room_id, token_hash, rejected):
+        reference = self.rooms.document(room_id)
+        rejected = set(rejected)
+        candidates = [snap.reference for snap in reference.collection('submissions').stream(timeout=10)
+                      if snap.to_dict()['answer'] in rejected]
+        # Bounded transactions stay below Firestore's write limit.
+        for offset in range(0, len(candidates), 100):
+            group = candidates[offset:offset + 100]
+            @firestore.transactional
+            def remove(transaction):
+                data = room_data(reference.get(transaction=transaction, timeout=10, retry=None))
+                check_host(data, token_hash)
+                if data['status'] != 'generating': raise RoomError(409, 'The room is not being screened.')
+                snapshots = [ref.get(transaction=transaction, timeout=10, retry=None) for ref in group]
+                existing = [snap for snap in snapshots if snap.exists and snap.to_dict()['answer'] in rejected]
+                for snap in existing: transaction.delete(snap.reference)
+                if existing:
+                    transaction.update(reference, {'submission_count':max(0,data['submission_count']-len(existing))})
+            run_transaction(self.client,remove)
+
 
     def add_samples(self, room_id, token_hash, answers):
         import hashlib

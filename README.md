@@ -129,6 +129,32 @@ Difficulty selects the closest available AI tier independently of writing style;
 no new LLM requests occur during rounds. See the model card for the heuristic
 and its limitations. Ending early scores only assessed answers.
 
+## Classroom content screening
+
+A server-side filter rejects common profanity and obfuscations before saving a
+student answer or host sample. It handles leetspeak, separated letters, common
+Unicode lookalikes, accents, zero-width characters and masked spellings. Rejected
+requests return 422, leave the count unchanged and let the student edit and retry
+with the same browser receipt. Harmless substrings such as “class”, “assignment”
+and “Scunthorpe” are covered by tests.
+
+**Start game** also runs a structured Gemini screening pass over collected human
+answers for offensive content, harassment, explicit sexual content and threats.
+Flagged records (including records collected before this feature) are deleted
+with their count adjustments in retry-safe Firestore transactions. Only accepted,
+unmodified text reaches sampling and Chameleon. This adds one AI screening pass
+before generation rather than a model request for every student submission.
+If screening fails, the room returns to closed and no game is prepared. If all
+answers are rejected, the host is asked to create a new room. Generated answers
+and writing notes also pass the local profanity filter.
+
+Games generated before screening was introduced return 409 instead of exposing
+old unscreened answers; reload and create a new room. Moderation is imperfect:
+novel obfuscations or context may be misclassified. Host skip/end controls remain
+available. [The real moderation check](evidence/moderation_flow.json) records
+rejections, a corrected submission, removal/count consistency, and the old-game
+access guard. All temporary test data was removed.
+
 ## Tests and real execution evidence
 
 ```sh
@@ -139,7 +165,7 @@ node --check frontend/static/participant.js
 node --check frontend/static/sounds.js
 ```
 
-Actual results: **37 Python tests passed**, **8 JavaScript tests passed**, syntax
+Actual results: **65 Python tests passed**, **8 JavaScript tests passed**, syntax
 checks passed. Python tests use explicitly mocked AI data for scoring and failures.
 The JS tests execute the actual host and submission scripts with DOM/network
 doubles, checking preset/custom room creation against the real HTML element IDs,
@@ -196,6 +222,10 @@ end_to_end: passed
 | Guardrail input/scenario | Verified behavior |
 | --- | --- |
 | Empty/whitespace or >280-character answer | 422; no accepted submission |
+| Profanity or `B-1-T-C-H` | 422; no receipt or count increase; text remains editable |
+| AI flags an already collected answer | Record removed; count adjusted; excluded from game and references |
+| Screening unavailable or incomplete decisions | 503; closed room; no unscreened game |
+| Old unscreened game | 409; create a new room |
 | Cross-origin mutation or missing host cookie | 403 |
 | Duplicate submission receipt | Count remains unchanged |
 | Empty, duplicate, long or near-copy AI output | Rejected before play |

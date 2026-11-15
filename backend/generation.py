@@ -26,9 +26,11 @@ class Batch(BaseModel):
 
 
 def validate_outputs(texts, humans, seen):
+    from backend.moderation import contains_profanity
     result=[]
     for raw in texts:
         text=raw.strip(); normalized=' '.join(text.casefold().split())
+        if contains_profanity(text): raise ValueError('Unsafe generated answer.')
         if not 2 <= len(text) <= 280 or any(
             SequenceMatcher(None, normalized, previous).ratio() > .88 for previous in seen
         ):
@@ -43,6 +45,8 @@ def validate_notes(answers, seen):
     notes = []
     for answer in answers:
         note = answer.explanation
+        from backend.moderation import contains_profanity
+        if contains_profanity(note): raise ValueError('Unsafe generated writing note.')
         normalized = ' '.join(note.casefold().split())
         if not note.startswith('I ') or any(
             phrase in normalized for phrase in ('i was asked', 'i was given')

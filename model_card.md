@@ -42,10 +42,18 @@ answer faithfully follows the intended style.
 
 Style control is probabilistic: slang can be mild, and Chameleon may miss local
 writing patterns. Similarity filtering catches near copies, not all paraphrases.
-Prompt isolation and model safety instructions are not comprehensive moderation;
-human answers are length-validated and rendered as text, but inappropriate
-content is still possible in a trusted classroom. Host review and ending/skipping
-an unsuitable response remain available. No demographic identity is inferred.
+Student answers and host samples pass a local profanity/obfuscation filter before
+storage. Before gameplay, Gemini classifies collected human text using strict,
+complete per-answer decisions. Flagged records are removed with transactional
+count corrections, and only accepted original text reaches generation. Missing,
+invalid or unavailable screening fails closed. Generated answers and writing
+notes also pass the local filter. Games predating screening cannot expose their
+old answers. Real evidence is in `evidence/moderation_flow.json`.
+
+This is not exhaustive moderation: new encodings and ambiguous context can be
+missed, and conservative checks can reject benign text. Prompt isolation and
+normalization reduce risks but cannot eliminate them. Host skip/end controls
+remain available. No demographic identity is inferred.
 
 Difficulty uses a deliberately simple heuristic: long AI answers are tier 1;
 short answers starting lowercase are tier 3; others are tier 2. Correct AI guesses
@@ -99,6 +107,6 @@ host-selected game length. No claims of staff approval of the redesign are made.
 ## Improvements
 
 Rehearse with real devices, evaluate styles with humans, refine difficulty using
-observed results, add proportionate moderation if needed, and review data retention
+observed results, expand moderation cases from observed failures, and review data retention
 before public use. A small classroom's votes cannot establish general AI-detection
 accuracy or bias measurements.

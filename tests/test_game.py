@@ -92,7 +92,7 @@ def test_generation_failure_restores_closed_room():
     store.answers.return_value=['human answer']
     with TestClient(create_app(Settings(_env_file=None),store)) as client:
         client.cookies.set('gth_host','test-token')
-        with patch('backend.generation.generate',side_effect=RoomError(502,'mocked provider outage')):
+        with patch('backend.moderation.screen_answers',return_value=(['human answer'],[])), patch('backend.generation.generate',side_effect=RoomError(502,'mocked provider outage')):
             response=client.post('/api/rooms/'+uuid4().hex+'/generate')
         assert response.status_code==502 and state['status']=='closed'
 
@@ -128,7 +128,7 @@ def test_begin_closes_generates_and_starts_in_one_request():
     mocked=[dict(text=f'mocked AI {i}',style='Basic',level=2,explanation='Test fixture') for i in range(3)]
     with TestClient(create_app(Settings(_env_file=None),store)) as client:
         client.cookies.set('gth_host','test-token')
-        with patch('backend.generation.generate',return_value=mocked) as generate_mock:
+        with patch('backend.moderation.screen_answers',return_value=(store.answers.return_value,[])), patch('backend.generation.generate',return_value=mocked) as generate_mock:
             first=client.post('/api/rooms/'+rid+'/begin')
             assert first.status_code==200 and first.json()['status']=='playing'
             assert first.json()['game']['round']==1 and first.json()['game']['total']==6

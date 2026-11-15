@@ -75,6 +75,8 @@ def host_room(room_id: UUID, request: Request, store: RoomStore = Depends(get_st
 def submit_answer(room_id: UUID, body: SubmitAnswer, request: Request,
                   store: RoomStore = Depends(get_store)):
     check_origin(request)
+    from backend.moderation import require_clean
+    require_clean(body.answer)
     return store.submit_answer(room_id.hex, body.submission_id.hex, body.answer)
 
 
@@ -96,6 +98,7 @@ def generate_answers(room_id: UUID, request: Request, store: RoomStore = Depends
     from uuid import uuid4
     from backend.game import human_sample, prepare
     from backend.generation import generate
+    from backend.moderation import screen_answers
     check_origin(request); token=host_hash(request); attempt=uuid4().hex
     def claim(data):
         if data['status'] != 'closed' and not (data['status']=='generating' and time.time()-data.get('generation_started',0)>180):
@@ -104,7 +107,10 @@ def generate_answers(room_id: UUID, request: Request, store: RoomStore = Depends
     store.mutate(room_id.hex,token,claim)
     try:
         host=store.get_host_room(room_id.hex,token)
-        all_humans=store.answers(room_id.hex)
+        all_humans,rejected=screen_answers(request.app.state.settings,store.answers(room_id.hex))
+        if rejected: store.remove_answers(room_id.hex,token,rejected)
+        if not all_humans:
+            raise HTTPException(409,'No classroom-appropriate answers remain. Please create a new room.')
         selected=human_sample(all_humans,host['rounds'])
         generated=generate(request.app.state.settings,host['question'],all_humans,len(selected))
         game=prepare(selected,generated)
@@ -145,7 +151,11 @@ def sample_answers(room_id:UUID,request:Request,store:RoomStore=Depends(get_stor
 @router.post('/{room_id}/samples')
 def add_samples(room_id:UUID,body:SampleAnswers,request:Request,store:RoomStore=Depends(get_store)):
     check_origin(request)
-    return store.add_samples(room_id.hex,host_hash(request),body.answers)
+    from backend.moderation import require_clean
+    token=host_hash(request)
+    store.get_host_room(room_id.hex,token)
+    for answer in body.answers: require_clean(answer)
+    return store.add_samples(room_id.hex,token,body.answers)
 
 @router.post('/{room_id}/begin')
 def begin(room_id:UUID,request:Request,store:RoomStore=Depends(get_store)):

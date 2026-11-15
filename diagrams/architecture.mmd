@@ -1,11 +1,14 @@
 flowchart LR
-  Student[Student browser: anonymous answer] --> API[FastAPI: validation and host cookies]
+  Student[Student browser: anonymous answer] --> API[FastAPI: validation, profanity filter, host cookies]
   Host[Host browser: room controls and guesses] --> API
   Audience[Audience votes in Zoom chat] --> Host
   API --> DB[(Firestore: rooms, receipts, answers, game state)]
-  API --> Generator[Structured prompting: Basic / Chameleon / Slang]
+  API --> Screen[Pre-game local + Gemini screen]
+  Screen --> Clean[Delete flagged records and adjust count]
+  Clean --> DB
+  Clean --> Generator["Basic / Slang: question only<br/>Chameleon: accepted human references"]
   Generator --> Gemini[Gemini API: answers and individual writing notes]
-  Gemini --> Guard[Schema, length, answer and note duplicates, copying checks]
+  Gemini --> Guard[Schema, profanity, length, duplicates, copying checks]
   Guard --> Logic[Python: balanced selection, adaptive order, scoring]
   Logic --> DB
   DB --> API

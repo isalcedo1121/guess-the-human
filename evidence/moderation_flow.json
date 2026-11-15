@@ -1,0 +1,12 @@
+{
+  "default_rounds": 20,
+  "plain_profanity": 422,
+  "leetspeak": 422,
+  "corrected_answer_same_receipt": "accepted",
+  "preexisting_rejections_removed": 3,
+  "submission_count": 3,
+  "game_rounds": 6,
+  "unsafe_answers_absent_from_storage_and_game": true,
+  "old_unscreened_game_blocked": 409,
+  "result": "passed"
+}

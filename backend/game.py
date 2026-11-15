@@ -3,6 +3,12 @@ import random
 from uuid import uuid4
 from backend.storage import RoomError
 
+MODERATION_VERSION = 1
+
+
+def require_screened(game):
+    if game and game.get('moderation_version') != MODERATION_VERSION:
+        raise RoomError(409, 'Please create a new room to use submission screening.')
 
 def human_sample(answers, rounds):
     answers = list(dict.fromkeys(answers))
@@ -20,7 +26,7 @@ def prepare(humans, generated):
     for row in pool:
         row['id'] = uuid4().hex
     random.shuffle(pool)
-    return dict(remaining=pool, current=None, history=[], level=2, revealed=False, total=len(pool))
+    return dict(remaining=pool, current=None, history=[], level=2, revealed=False, total=len(pool), moderation_version=MODERATION_VERSION)
 
 
 def advance(game):
@@ -41,6 +47,7 @@ def advance(game):
 
 def act(data, action, answer_id=None, guess=None):
     game = data.get('game')
+    require_screened(game)
     if action == 'start':
         if data['status'] != 'ready': raise RoomError(409, 'Answers are not ready.')
         advance(game); data['status'] = 'playing'
@@ -65,6 +72,7 @@ def act(data, action, answer_id=None, guess=None):
 
 
 def view(data):
+    require_screened(data['game'])
     game = data['game']; history = game['history']
     correct = sum(x['correct'] for x in history)
     current = game['current']
