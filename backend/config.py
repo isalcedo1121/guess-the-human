@@ -20,8 +20,10 @@ class Settings(BaseSettings):
     app_env: Literal["development", "test", "production"] = "development"
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
 
-    # Reserved for later stages; none is required to run the frontend.
+    # Firestore is required for rooms, but not for loading the frontend.
     firebase_project_id: str | None = None
+    google_application_credentials: str | None = None
     firebase_service_account_json: SecretStr | None = None
-    llm_api_key: SecretStr | None = None
-    llm_model: str | None = None
+
+    gemini_api_key: SecretStr | None = None
+    gemini_model: str = "gemini-3.5-flash-lite"

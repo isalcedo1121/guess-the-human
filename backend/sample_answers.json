@@ -1,0 +1,25 @@
+{
+  "What's the worst excuse you could give to a professor for missing an assignment?": [
+    "My dog ate my homework.",
+    "I forgot I was taking an online class.",
+    "I couldn’t focus because my girlfriend broke up with me.",
+    "I was up all night studying, so I slept through the quiz."
+  ],
+  "What hobby do you enjoy and why do you like it?": [
+    "Making music, because it feels so ethereal, and I’ve always loved music.",
+    "Gaming because I like competing with others and using my brain to strategize."
+  ],
+  "What do you do when your code doesn't work?": [
+    "Ask ChatGPT and look for errors. If there aren’t any, I look through the code myself to find the bugs.",
+    "Add print statements to check for inconsistencies in the output."
+  ],
+  "If you could learn one new skill, what would it be and why?": [
+    "Speaking every language, so I can converse with anyone around the world.",
+    "Sleeping on command, because I can never seem to get a good night’s sleep or sleep early.",
+    "Cooking, so I can be healthier."
+  ],
+  "What's one thing you wish you knew before starting college?": [
+    "That college doesn’t prepare you for work.",
+    "That nobody knows what they’re doing either."
+  ]
+}

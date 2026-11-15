@@ -17,6 +17,7 @@
       <a class="brand" href="/" aria-label="Guess the Human home">
         <span class="mark" aria-hidden="true">?</span> GUESS THE HUMAN
       </a>
+      <a id="new-game" class="top-new" href="/" hidden>New game</a>
     </header>
 
     <main id="main">
@@ -28,10 +29,10 @@
             <label class="field-label" for="question-select">Choose your question</label>
             <div class="select-wrap">
               <select id="question-select" name="question">
+                <!-- preset-questions -->
                 <option value="custom">Write my own question</option>
               </select>
             </div>
-            <p id="question-error" class="field-note" role="status" hidden></p>
             <div id="custom-question-field" class="field-space">
               <label class="field-label" for="custom-question">Your question</label>
               <textarea id="custom-question" class="text-entry compact" name="custom_question"
@@ -40,82 +41,87 @@
             <div class="field-space round-field">
               <label class="field-label" for="round-count">Game length</label>
               <div class="select-wrap">
-                <select id="round-count" name="rounds" aria-describedby="balance-note">
+                <select id="round-count" name="rounds">
                   <option value="10">10 rounds</option>
                   <option value="12">12 rounds</option>
                   <option value="14">14 rounds</option>
                   <option value="16">16 rounds</option>
                   <option value="18">18 rounds</option>
-                  <option value="20">20 rounds</option>
+                  <option value="20" selected>20 rounds</option>
                 </select>
               </div>
-              <p id="balance-note" class="field-note">5 human answers · 5 AI answers</p>
             </div>
             <div class="actions end">
-              <button class="btn primary" type="submit" disabled>Create room →</button>
+              <button class="btn primary" type="submit" id="create-room">Create room →</button>
             </div>
+            <p id="setup-error" class="field-note error-message" role="alert" hidden></p>
           </form>
         </div>
       </section>
 
       <section id="lobby" class="screen" aria-labelledby="lobby-title" hidden>
-        <div class="hero"><h1 id="lobby-title" tabindex="-1">Ready for <em>answers?</em></h1></div>
+        <div class="hero"><h1 id="lobby-title" tabindex="-1">Room is <em id="room-status">open!</em></h1></div>
         <div class="card narrow">
-          <h2>Waiting for answers</h2>
-          <label class="field-label" for="room-link">Student submission link</label>
+          <h2 id="lobby-heading">Waiting for answers</h2>
+          <label class="field-label" for="room-link">Room link</label>
           <div class="link-row">
-            <input id="room-link" type="text" disabled>
-            <button class="btn secondary small" type="button" disabled>Copy link</button>
+            <input id="room-link" type="text" readonly>
+            <button class="btn secondary small" id="copy-link" type="button">Copy link</button>
           </div>
           <div class="question-card"><p class="overline">Question</p><p class="question" data-question></p></div>
           <div class="count-wrap">
-            <div class="count-bubble" aria-label="Submission count"></div>
+            <div id="submission-count" class="count-bubble" aria-live="polite" aria-label="Submission count"></div>
             <div class="count-label">Answers submitted</div>
           </div>
           <div class="divider"></div>
-          <div class="actions">
-            <button class="btn secondary" type="button" disabled>Refresh count</button>
-            <button class="btn primary" type="button" disabled>Close submissions</button>
+          <div class="actions lobby-actions">
+            <div class="lobby-secondary">
+              <button class="btn secondary small" id="add-samples" type="button">+ Sample answers</button>
+              <button class="btn secondary small" id="refresh-count" type="button" hidden>Refresh count</button>
+              <button class="btn secondary small" id="close-room" type="button">Close submissions</button>
+            </div>
+            <button id="start-game" class="btn primary" type="button">Start game →</button>
           </div>
+          <p id="lobby-error" class="field-note error-message" role="alert" hidden></p>
         </div>
       </section>
 
       <section id="generating" class="screen" aria-labelledby="generating-title" hidden>
         <div class="card narrow loading">
           <div class="spinner" aria-hidden="true"></div>
-          <h1 id="generating-title" tabindex="-1">Getting answers ready…</h1>
+          <h1 id="generating-title" tabindex="-1">AI is generating answers…</h1>
         </div>
       </section>
 
       <section id="play" class="screen" aria-labelledby="play-title" hidden>
         <div class="stage">
-          <div class="stage-top"><span class="badge" aria-label="Round"></span><span class="badge" aria-label="Score"></span></div>
+          <div class="stage-top"><span class="badge" data-progress aria-label="Round"></span><span class="badge" data-score aria-label="Score"></span></div>
           <div class="progress" aria-hidden="true"><div></div></div>
           <div class="card stage-card">
             <p class="overline">Question</p>
             <h1 id="play-title" class="stage-question" data-question tabindex="-1"></h1>
-            <div class="answer-panel"><p class="answer-text"></p></div>
+            <div class="answer-panel"><p class="answer-text" data-answer></p></div>
             <div class="vote-grid">
-              <button class="vote human" type="button" disabled><span class="icon" aria-hidden="true">🧑</span>Human</button>
-              <button class="vote ai" type="button" disabled><span class="icon" aria-hidden="true">🤖</span>AI</button>
+              <button class="vote human" data-guess="human" type="button"><span class="icon" aria-hidden="true">🧑</span>Human</button>
+              <button class="vote ai" data-guess="ai" type="button"><span class="icon" aria-hidden="true">🤖</span>AI</button>
             </div>
-            <div class="stage-bottom"><button class="btn secondary small" type="button" disabled>Skip</button><button class="btn secondary small" type="button" disabled>End game</button></div>
+            <div class="stage-bottom"><button class="btn secondary small" data-action="skip" type="button">Skip</button><button class="btn secondary small" data-action="end" type="button">End game</button></div>
           </div>
         </div>
       </section>
 
       <section id="reveal" class="screen" aria-labelledby="reveal-title" hidden>
         <div class="stage">
-          <div class="stage-top"><span class="badge" aria-label="Round"></span><span class="badge" aria-label="Score"></span></div>
+          <div class="stage-top"><span class="badge" data-progress aria-label="Round"></span><span class="badge" data-score aria-label="Score"></span></div>
           <div class="card stage-card">
             <p class="overline">Question</p><p class="stage-question" data-question></p>
-            <div class="answer-panel"><p class="answer-text"></p></div>
-            <div class="reveal">
+            <div class="answer-panel"><p class="answer-text" data-answer></p></div>
+            <div id="reveal-box" class="reveal">
               <h1 id="reveal-title" tabindex="-1"></h1>
               <p class="actual"></p>
             </div>
-            <div class="actions end"><button class="btn primary" type="button" disabled>Next answer →</button></div>
-            <div class="stage-bottom"><button class="btn secondary small" type="button" disabled>End game</button></div>
+            <div class="actions end"><button class="btn primary" data-action="next" type="button">Next answer →</button></div>
+            <div class="stage-bottom"><button class="btn secondary small" data-action="end" type="button">End game</button></div>
           </div>
         </div>
       </section>
@@ -123,7 +129,7 @@
       <section id="results" class="screen" aria-labelledby="results-title" hidden>
         <h1 id="results-title" class="results-title" tabindex="-1">Results</h1>
         <div class="card narrow">
-          <div class="score-panel"><strong></strong><span>Accuracy</span></div>
+          <div class="score-panel"><strong id="accuracy"></strong><span>Accuracy</span></div>
           <div class="score-totals"><span><span id="correct-count"></span> correct</span><span><span id="incorrect-count"></span> incorrect</span></div>
           <div class="stats">
             <div class="stat"><strong></strong><span>AI caught</span></div>
@@ -132,9 +138,19 @@
           </div>
           <h2 class="answers-heading">Answers</h2>
           <div class="results-list"></div>
-          <div class="actions center"><button class="btn primary" type="button" disabled>Play again →</button></div>
+          <div class="actions center"><button class="btn primary" id="play-again" type="button">Play again →</button></div>
         </div>
       </section>
+      <p id="game-error" class="field-note error-message" role="alert" hidden></p>
+      <dialog id="sample-dialog" class="card sample-dialog">
+        <form id="sample-form">
+          <h2>Sample answers</h2>
+          <label class="field-label" for="sample-text">One answer per line</label>
+          <textarea id="sample-text" class="text-entry" rows="7" required></textarea>
+          <p id="sample-error" class="field-note error-message" role="alert" hidden></p>
+          <div class="actions"><button id="cancel-samples" class="btn secondary" type="button">Cancel</button><button id="save-samples" class="btn primary" type="submit">Add answers</button></div>
+        </form>
+      </dialog>
     </main>
   </body>
 </html>

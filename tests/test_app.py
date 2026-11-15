@@ -20,8 +20,8 @@ def test_health_does_not_expose_configuration(client):
     assert response.json() == {"status": "ok"}
 
 
-def test_room_creation_is_not_simulated(client):
-    assert client.post("/api/rooms", json={"question": "Example"}).status_code == 404
+def test_room_creation_requires_storage_configuration(client):
+    assert client.post("/api/rooms", json={"question": "Example"}).status_code == 503
 
 
 class AssetLinks(HTMLParser):
@@ -37,7 +37,7 @@ class AssetLinks(HTMLParser):
             self.urls.append(attrs["href"])
 
 
-@pytest.mark.parametrize("url, form_id", [("/", "setup-form"), ("/participant-preview", "answer-form")])
+@pytest.mark.parametrize("url, form_id", [("/", "setup-form"), ("/room/11111111111141118111111111111111", "answer-form")])
 def test_pages_and_their_assets_load_from_any_working_directory(client, tmp_path, monkeypatch, url, form_id):
     monkeypatch.chdir(tmp_path)
     response = client.get(url)
@@ -73,3 +73,22 @@ def test_question_bank_is_available_to_the_frontend(client):
 ])
 def test_source_and_environment_files_are_not_public(client, url):
     assert client.get(url).status_code == 404
+
+
+def test_presets_are_in_the_initial_html_and_custom_is_last(client):
+    class QuestionOptions(HTMLParser):
+        def __init__(self):super().__init__();self.in_select=False;self.values=[]
+        def handle_starttag(self,tag,attrs):
+            attrs=dict(attrs)
+            if tag=='select':self.in_select=attrs.get('id')=='question-select'
+            if tag=='option' and self.in_select:self.values.append(attrs['value'])
+        def handle_endtag(self,tag):
+            if tag=='select':self.in_select=False
+    page=client.get('/');parser=QuestionOptions();parser.feed(page.text)
+    assert parser.values==client.get('/static/questions.json').json()+['custom']
+    assert len(parser.values)==6
+    assert '<option value="20" selected>' in page.text
+    assert 'balance-note' not in page.text
+    assert 'human answers ·' not in page.text
+    assert page.headers['cache-control']=='no-store'
+    assert client.get('/static/host.js').headers['cache-control']=='no-store'

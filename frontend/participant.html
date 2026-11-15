@@ -18,17 +18,20 @@
     <main id="main">
       <div class="hero"><h1>Your <em>answer!</em></h1></div>
       <section class="card narrow" aria-label="Anonymous answer form">
-        <div class="question-card first"><p class="overline">Question</p><p class="question"></p></div>
-        <form id="answer-form">
+        <div id="participant-question-card" class="question-card first" hidden><p class="overline">Question</p><p id="participant-question" class="question"></p></div>
+        <form id="answer-form" hidden>
           <label class="field-label" for="submission">Your answer</label>
           <textarea class="text-entry" id="submission" name="answer" minlength="2" maxlength="280"
             placeholder="Type your answer…" aria-describedby="answer-note char-count" required></textarea>
           <p id="answer-note" class="field-note">Keep it anonymous. Leave out names and personal details.</p>
           <div class="actions">
             <span class="char-count" id="char-count"><span id="character-total">0</span> / 280</span>
-            <button class="btn primary" type="submit" disabled>Submit →</button>
+            <button class="btn primary" id="submit-answer" type="submit">Submit →</button>
           </div>
         </form>
+        <p id="submission-error" class="field-note error-message" role="alert" hidden></p>
+        <p id="participant-message" class="field-note" role="status" hidden></p>
+        <div id="submission-confirmation" class="reveal good" role="status" hidden><p class="actual">Answer submitted.</p></div>
       </section>
     </main>
   </body>
