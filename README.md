@@ -2,12 +2,27 @@
 
 A host-led classroom game: Students anonymously answer a question, while AI generates its own responses. Each round, an answer is revealed, and everyone votes Human or AI in Zoom chat. The host locks in the majority vote before revealing the truth. Can the class tell humans and AI apart?
 
+[Live game](https://guess-the-human.onrender.com/) · [Code on GitHub](https://github.com/isalcedo1121/guess-the-human)
+
+## Running a session
+
+Open the live game as the host, create a room, and copy the room link from the
+lobby. Send **that room link** to students so they join the same game. They can
+write an answer without making an account. The GitHub link is for viewing code.
+
+Open the app a few minutes before class and wait for setup to load. Render’s Free
+service can sleep after 15 minutes without traffic and take about a minute to
+wake up ([Render docs](https://render.com/docs/free)). If it has been idle for a
+while, reload it before people join. For a 5–7-minute demo, choose 10 rounds or
+end early.
+
 ## Original project
 
-This extends **Game Glitch Investigator**, the Module 1 Streamlit number game.
-It compared numeric guesses with a secret and displayed hints, attempts, scores,
-and history. The redesign preserves guessing, feedback, scoring, difficulty,
-and progression while changing the hidden target to answer authorship.
+This started as **Game Glitch Investigator**, my Module 1 Streamlit number-guessing
+game. The original checked guesses against a secret number and showed hints,
+attempts, scores and history. Guess the Human is a major redesign: it keeps the
+guessing and scoring idea, but rebuilds the interface and backend around human
+answers and real AI generation.
 
 | Original component | Evolution |
 | --- | --- |
@@ -49,8 +64,8 @@ Open http://127.0.0.1:8000. Create a room, copy its participant link, collect
 answers, then click **Start game**. It closes submissions, generates AI answers,
 and enters the first round automatically. You can also close submissions manually. Guess Human/AI,
 advance, skip, or end early. Host sessions survive reload via an HTTP-only cookie.
-A local loopback link works only on that computer. Public access requires a later,
-separately approved deployment; nothing has been pushed or deployed.
+The localhost link is for testing on your own computer. For a session with other
+people, use the live Render app linked above.
 
 The five presets are rendered into the initial host page, with custom entry last.
 HTML, scripts and API responses use `Cache-Control: no-store` to prevent stale
@@ -67,14 +82,14 @@ Results retain the mockup’s expandable AI strategy details, source chips and
 correct/incorrect markers. Gemini returns a short, active first-person writing note for each AI answer,
 describing how that answer uses its assigned writing style. Notes are checked for
 repetition and appear only on results; they are descriptions of the finished text,
-not hidden model reasoning. Older games use brief style summaries. Word hover and confetti follow the reference and
+not hidden model reasoning. Word hover and confetti follow the reference and
 respect reduced-motion settings. The original six sound effects play on the host
 page: a correct-answer sound, three wrong-answer sounds in rotation, and a win
 or loss sound on results (70% accuracy to win). They follow successful actions,
 so polling and page reloads do not replay them. Blocked audio does not interrupt
 the game. The files are served locally from `frontend/static/sounds/`.
 
-## Render configuration (deployment is separate)
+## Render setup
 
 The repository root contains `requirements.txt` and `app.py`. Use Python 3,
 branch `main`, a blank Root Directory, Oregon, the Free instance, and build command
@@ -96,8 +111,9 @@ private environment settings. The application already supports this format.
 Keep the JSON and API key outside Git and do not paste them into chat.
 Use `/health` as the health-check path; this checks the web process, not providers.
 
-These instructions do not deploy the app. Local amendments are not available to
-Render until the repository is pushed separately.
+The code is pushed to GitHub, and the app is hosted on Render. These settings are
+here so the setup can be repeated. Later local edits still need review and a push
+before they can be included in a deployment.
 
 ## Architecture and rules
 
@@ -136,10 +152,17 @@ student answer or host sample. It handles leetspeak, separated letters, common
 Unicode lookalikes, accents, zero-width characters and masked spellings. Rejected
 requests return 422, leave the count unchanged and let the student edit and retry
 with the same browser receipt. Harmless substrings such as “class”, “assignment”
-and “Scunthorpe” are covered by tests.
+and “Scunthorpe” are covered by tests. Standalone text art, symbol-only responses
+and recognized hate symbols are rejected. Ordinary punctuation, code fragments,
+language names and inline emojis remain valid. Words with legitimate alternate
+meanings are assessed in context by Gemini rather than blanket-blocked locally.
 
 **Start game** also runs a structured Gemini screening pass over collected human
-answers for offensive content, harassment, explicit sexual content and threats.
+answers for offensive content, sexual innuendo (including disguised or ambiguous
+sexualized remarks about minors), harassment, explicit sexual content, threats,
+and text art. It allows innocent childcare references, respectful criticism,
+harmless jokes and unusual or off-topic answers. The question supplies context
+without imposing a strict relevance test.
 Flagged records (including records collected before this feature) are deleted
 with their count adjustments in retry-safe Firestore transactions. Only accepted,
 unmodified text reaches sampling and Chameleon. This adds one AI screening pass
@@ -148,7 +171,7 @@ If screening fails, the room returns to closed and no game is prepared. If all
 answers are rejected, the host is asked to create a new room. Generated answers
 and writing notes also pass the local profanity filter.
 
-Games generated before screening was introduced return 409 instead of exposing
+Games generated before the current screening rules return 409 instead of exposing
 old unscreened answers; reload and create a new room. Moderation is imperfect:
 novel obfuscations or context may be misclassified. Host skip/end controls remain
 available. [The real moderation check](evidence/moderation_flow.json) records
@@ -165,15 +188,15 @@ node --check frontend/static/participant.js
 node --check frontend/static/sounds.js
 ```
 
-Actual results: **65 Python tests passed**, **8 JavaScript tests passed**, syntax
+Actual results: **80 Python tests passed**, **8 JavaScript tests passed**, syntax
 checks passed. Python tests use explicitly mocked AI data for scoring and failures.
 The JS tests execute the actual host and submission scripts with DOM/network
 doubles, checking preset/custom room creation against the real HTML element IDs,
 retained submission text, stable retry IDs, completion only after acknowledgement,
 safe rendering of individual writing notes, sound selection/rotation, silent
 audio priming and harmless playback rejection.
-These are not rendered-browser tests. Browser preview access was unavailable;
-audible playback and the final results layout still need a manual browser check.
+These automated checks use DOM/network doubles. I also rehearsed the game with
+about 10 CodePath staff members; see the rehearsal notes below.
 
 Run the live example against your configured free-tier services:
 
@@ -187,35 +210,50 @@ scores all rounds, and removes only its own test room. It writes
 [evidence/live_examples.json](evidence/live_examples.json). It uses your service
 quotas and model wording may vary. No credentials or host cookies are recorded.
 
-Actual execution excerpts from that run (the style examples below were refreshed
-from the later verified comparison):
+### Three input/output examples
+
+The app uses all three styles automatically. These are real saved Gemini outputs
+from [the style comparison](evidence/style_comparison.json), with the question
+and model inputs shown together. Wording can change from game to game.
 
 ```text
-Example 1 — create and submit
-POST /api/rooms -> 201
-5 independent participants -> 200 each
-Duplicate retry for each participant -> 200
-submission_count -> 5
-Unrelated participant requesting host controls -> 403
-Late submission after closing -> 409
+Example 1 — Basic
+Question: What do you do when your code doesn't work?
+Model input: the question and Basic instructions; no student answers.
+AI output: When my code fails, I systematically review error messages, isolate the problematic function with unit tests, and trace the execution step by step to identify the root cause.
 ```
 
 ```text
-Example 2 — real generation
-POST /api/rooms/{id}/generate -> 200
-model: gemini-3.5-flash-lite
-Basic: "When my code fails, I systematically review error messages, isolate the problematic function with unit tests, and trace the execution step by step to identify the root cause."
-Chameleon (lowercase, unpunctuated references): "google the error message word for word"
-Slang: "My debugging rizz is completely chopped when syntax errors show up so I just restart the laptop no cap."
+Example 2 — Chameleon
+Question: What do you do when your code doesn't work?
+Model input: the question, Chameleon instructions, and these human references:
+  "i usally look thru it agian bc i miss stuff"
+  "i usally ask someone bc the error looks wierd"
+  "i check the console agian bc i dont get it"
+  "i usally walk away bc i get annoyed"
+  "i check stackoverflow agian bc thats easier"
+AI output: i restart my computer agian bc it fixes it
+Writing note: I used all lowercase letters, repeated the misspelling agian, and kept the short phrasing without any ending punctuation.
 ```
 
 ```text
-Example 3 — guessing and scoring
-10 rounds: 5 human + 5 AI
-Guess Human on every answer
-correct: 5
-incorrect: 5
-accuracy: 50
+Example 3 — Slang
+Question: What do you do when your code doesn't work?
+Model input: the question and Gen Alpha / Gen Z slang instructions; no student answers.
+AI output: My debugging rizz is completely chopped when syntax errors show up so I just restart the laptop no cap.
+```
+
+Here is the full-game result from `python scripts/run_examples.py`, recorded in
+[evidence/live_examples.json](evidence/live_examples.json):
+
+```text
+Input: "What do you do when your code doesn't work?"
+Human inputs: 5 written answers, including "print every variable until the bug confesses"
+Create room: 201
+Submit 5 answers: 200 each; repeat requests kept the count at 5
+Generate answers: 200
+Play all 10 rounds, guessing Human each time
+Result: 5 correct, 5 incorrect, 50% accuracy
 end_to_end: passed
 ```
 
@@ -254,21 +292,65 @@ notes, but its style prompting is superseded by the current comparison above.
 
 Earlier live checks revealed a Firestore transaction conflict and a provider 404;
 those were addressed before the passing run. Provider 503s receive one retry.
-No full rendered-browser or phone rehearsal has been completed; do that before
-presentation. No screenshots substitute for the text evidence above.
+### Rehearsal with people
+
+| Check | What happened | Source |
+| --- | --- | --- |
+| Group rehearsal | About 10 CodePath staff joined the game. It worked well in that rehearsal. | My rehearsal report |
+| Feedback | One person pointed out possible cold starts. I’ll open the app before the session. | My rehearsal report |
+| Public page check | The live homepage and `/health` both returned 200; health returned `{"status":"ok"}`. | Read-only HTTPS check |
+
+The group rehearsal is informal feedback. The automated results and saved outputs
+above give separate, repeatable evidence.
+
+## Deployment-readiness verification
+
+The current checks are recorded in
+[evidence/deployment_readiness.json](evidence/deployment_readiness.json).
+A separate clean source copy and virtual environment used only `requirements.txt`,
+with `APP_ENV=production`, inline Firebase JSON, and the Gemini key provided in
+process environment variables. No `.env` or local credential file was copied.
+Runtime imports, Uvicorn startup with the Render flags, `/health`, room creation,
+host access, participant page/assets, and secure host cookies passed. An HTTPS
+browser-origin test verified participant links use that origin rather than a
+hardcoded localhost URL. All temporary verification rooms were deleted and the
+verification server stopped.
+
+Twenty live screening cases passed using the local filter and Gemini, preserving
+benign childcare, names,
+animal terms, respectful instructor feedback, humor, code and inline emojis while
+rejecting the tested unsafe cases and drawings. Automated tests separately cover
+fail-closed screening, original writing preservation, count updates and rejected
+content exclusion. Tracked files and reachable Git history were scanned for
+actual local secrets and private-key patterns; none were found.
+
+That report records the checks done before deployment. The app is now on Render:
+a later HTTPS check confirmed the homepage and `/health` respond. I also
+rehearsed it with staff, as noted above. Shared data lives in Firestore, so a Render restart
+doesn’t depend on keeping a local database file.
+
+## My part in the project
+
+My biggest contribution was definitely the visual design and keeping the game simple. I
+wanted people to know where to look and what to click without a bunch of clutter.
+I used coding assistants to work through ideas, code and bugs,
+while I made the calls on the design and what belonged in the MVP. This ended up
+being a big redesign of the old number game. It shows that I can guide AI tools,
+question their output, and test something with real people!
 
 ## Assignment coverage and reflection
 
-The local official assignment and the full seven-category rubric supplied in the
-conversation were reviewed. Base project: above. Integrated specialization:
-three structured generation strategies. Architecture: Mermaid source. End-to-end:
-three examples above. Reliability: validators, failure tests and real checks.
-Setup: commands above. AI collaboration/limitations: `model_card.md`. This is an
-implementation/evidence mapping, not a claim of awarded points or staff approval.
+The required AI extension is specialized behavior through structured prompting,
+plus AI screening and reliability checks built into the game. The rubric allows
+these options; RAG and fine-tuning are not required. Chameleon uses examples in
+its prompt, without training the model or searching a retrieval index.
 
-The original debugging lesson carries forward: passing helper tests alone is
-insufficient. Concurrent requests and real provider calls found failures that
-isolated tests missed. Optional RAG and agent infrastructure were deliberately
-excluded. Before the 5–7-minute presentation, rehearse on separate devices and
-check the provider quota. Public publishing remains a user-controlled release
-step. Render free services may cold-start; Firestore persists data separately.
+The original project is named above. The app includes real AI generation and
+screening, a [Mermaid diagram](diagrams/architecture.mmd), setup steps, three
+input/output examples, and saved test results. My AI collaboration, decisions,
+limitations and misuse concerns are in [model_card.md](model_card.md).
+
+What I learned: passing tests is a good start, but real API calls and people
+playing the game catch things that small tests miss. A rehearsal with staff here at CodePath helped
+me check the experience, and the cold-start feedback gave me something practical
+to prepare for.

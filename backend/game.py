@@ -3,7 +3,7 @@ import random
 from uuid import uuid4
 from backend.storage import RoomError
 
-MODERATION_VERSION = 1
+MODERATION_VERSION = 2
 
 
 def require_screened(game):

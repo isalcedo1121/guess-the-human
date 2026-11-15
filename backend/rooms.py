@@ -107,7 +107,7 @@ def generate_answers(room_id: UUID, request: Request, store: RoomStore = Depends
     store.mutate(room_id.hex,token,claim)
     try:
         host=store.get_host_room(room_id.hex,token)
-        all_humans,rejected=screen_answers(request.app.state.settings,store.answers(room_id.hex))
+        all_humans,rejected=screen_answers(request.app.state.settings,store.answers(room_id.hex),host['question'])
         if rejected: store.remove_answers(room_id.hex,token,rejected)
         if not all_humans:
             raise HTTPException(409,'No classroom-appropriate answers remain. Please create a new room.')

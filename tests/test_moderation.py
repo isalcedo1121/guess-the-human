@@ -9,7 +9,7 @@ from app import create_app
 from backend.config import Settings
 from backend.game import act, prepare, view
 from backend.generation import GeneratedAnswer, validate_notes, validate_outputs
-from backend.moderation import contains_profanity, screen_answers
+from backend.moderation import contains_profanity, contains_text_art, screen_answers
 from backend.storage import RoomError, RoomStore
 
 
@@ -22,15 +22,27 @@ def test_common_obfuscations_are_blocked(text):
 
 
 @pytest.mark.parametrize('text', ['My assignment is for class.', 'I assess the classic solution.',
-                                   'I live in Scunthorpe.', 'i ask chatgpt bc im cooked', 'I use a shell.'])
+                                   'I live in Scunthorpe.', 'i ask chatgpt bc im cooked', 'I use a shell.',
+                                   'My friend Dick helps me debug.', 'I care for an ass on a farm.',
+                                   'I keep a cock with the hens.'])
 def test_harmless_substrings_and_slang_are_allowed(text):
     assert not contains_profanity(text)
+
+
+@pytest.mark.parametrize('text', ['(=^..^=)', '8===D', '卐 卐', '卍 test', '!!!', '😂😂'])
+def test_text_art_and_symbol_only_answers_are_blocked(text):
+    assert contains_text_art(text)
+
+
+@pytest.mark.parametrize('text', ['C++', "print('hello')", 'lol 😂', 'i dont know', 'I like tutoring kids.'])
+def test_words_code_and_inline_emoji_remain_valid(text):
+    assert not contains_text_art(text)
 
 
 def test_submission_and_samples_reject_profanity_without_writes():
     store=Mock();room_id=uuid4().hex
     with TestClient(create_app(Settings(_env_file=None),store)) as client:
-        for text in ('fuck you bitch','B-1-T-C-H'):
+        for text in ('fuck you bitch','B-1-T-C-H','(=^..^=)','8===D','卐 卐'):
             response=client.post(f'/api/rooms/{room_id}/submissions',json={'submission_id':str(uuid4()),'answer':text})
             assert response.status_code==422 and text not in response.text
         client.cookies.set('gth_host','test-token')
@@ -39,14 +51,15 @@ def test_submission_and_samples_reject_profanity_without_writes():
 
 
 def test_ai_screen_preserves_original_writing_and_excludes_flagged_answers():
-    answers=['i usally debug agian bc thats easier','A threatening message','B-1-T-C-H']
+    answers=['i usally debug agian bc thats easier','A threatening message','B-1-T-C-H','(=^..^=)']
     client=Mock();client.models.generate_content.return_value.text=json.dumps({'decisions':[{'id':1,'allowed':False},{'id':0,'allowed':True}]})
     with patch('backend.moderation.genai.Client') as provider:
         provider.return_value.__enter__.return_value=client
-        accepted,rejected=screen_answers(Settings(_env_file=None,gemini_api_key='test-placeholder'),answers)
+        accepted,rejected=screen_answers(Settings(_env_file=None,gemini_api_key='test-placeholder'),answers,'A classroom question?')
     assert accepted==answers[:1] and set(rejected)==set(answers[1:])
     sent=json.loads(client.models.generate_content.call_args.kwargs['contents'])
-    assert sent[0]['text']==answers[0] and len(sent)==2
+    assert sent['answers'][0]['text']==answers[0] and len(sent['answers'])==2
+    assert sent['question']=='A classroom question?'
 
 
 @pytest.mark.parametrize('decisions', [[], [{'id':0,'allowed':True},{'id':0,'allowed':True}],
@@ -108,9 +121,11 @@ def test_all_rejected_answers_leave_no_game_and_a_corrected_count():
     assert state['status']=='closed' and state['submission_count']==0 and 'game' not in state
 
 
-def test_old_unscreened_games_cannot_return_answers_or_accept_actions():
+@pytest.mark.parametrize('old_version', [None, 1])
+def test_old_unscreened_games_cannot_return_answers_or_accept_actions(old_version):
     game=prepare(['safe human'],[dict(text='safe AI',style='Basic',level=2)])
     del game['moderation_version']
+    if old_version is not None:game['moderation_version']=old_version
     state={'status':'ready','game':game}
     with pytest.raises(RoomError):view(state)
     with pytest.raises(RoomError):act(state,'start')

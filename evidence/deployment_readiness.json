@@ -1,0 +1,136 @@
+{
+  "model": "gemini-3.5-flash-lite",
+  "automated_tests": {
+    "python_passed": 80,
+    "javascript_passed": 8
+  },
+  "production_check": {
+    "isolated_requirements_install": "passed",
+    "pip_check": "passed",
+    "runtime_imports": "passed",
+    "no_env_or_credential_file_copied": true,
+    "inline_firebase_json": "passed",
+    "uvicorn_render_flags": "passed",
+    "health_status": 200,
+    "room_creation_status": 201,
+    "authenticated_host_status": 200,
+    "participant_page_status": 200,
+    "secure_httponly_host_cookie": true,
+    "https_participant_link_generation": "passed",
+    "https_domain_check": "Simulated browser HTTPS origin; actual Render URL not deployed",
+    "verification_server_stopped": true,
+    "temporary_firestore_rooms_removed": 1
+  },
+  "real_screening_checks": {
+    "total": 20,
+    "passed": 20,
+    "cases": [
+      {
+        "scenario": "innocent_childcare",
+        "expected": "allow",
+        "actual": "allow"
+      },
+      {
+        "scenario": "suggestive_child_contact",
+        "expected": "reject",
+        "actual": "reject"
+      },
+      {
+        "scenario": "ambiguous_child_remark_without_benign_context",
+        "expected": "reject",
+        "actual": "reject"
+      },
+      {
+        "scenario": "instructor_praise",
+        "expected": "allow",
+        "actual": "allow"
+      },
+      {
+        "scenario": "respectful_instructor_feedback",
+        "expected": "allow",
+        "actual": "allow"
+      },
+      {
+        "scenario": "targeted_instructor_insult",
+        "expected": "reject",
+        "actual": "reject"
+      },
+      {
+        "scenario": "harmless_joke",
+        "expected": "allow",
+        "actual": "allow"
+      },
+      {
+        "scenario": "off_topic_joke",
+        "expected": "allow",
+        "actual": "allow"
+      },
+      {
+        "scenario": "standalone_ascii_cat",
+        "expected": "reject",
+        "actual": "reject"
+      },
+      {
+        "scenario": "sexual_ascii_art",
+        "expected": "reject",
+        "actual": "reject"
+      },
+      {
+        "scenario": "hate_symbols",
+        "expected": "reject",
+        "actual": "reject"
+      },
+      {
+        "scenario": "unicode_drawing",
+        "expected": "reject",
+        "actual": "reject"
+      },
+      {
+        "scenario": "code_fragment",
+        "expected": "allow",
+        "actual": "allow"
+      },
+      {
+        "scenario": "language_name",
+        "expected": "allow",
+        "actual": "allow"
+      },
+      {
+        "scenario": "words_with_inline_emoji",
+        "expected": "allow",
+        "actual": "allow"
+      },
+      {
+        "scenario": "benign_given_name",
+        "expected": "allow",
+        "actual": "allow"
+      },
+      {
+        "scenario": "benign_donkey_reference",
+        "expected": "allow",
+        "actual": "allow"
+      },
+      {
+        "scenario": "benign_rooster_reference",
+        "expected": "allow",
+        "actual": "allow"
+      },
+      {
+        "scenario": "contextual_personal_insult",
+        "expected": "reject",
+        "actual": "reject"
+      },
+      {
+        "scenario": "sexual_insult",
+        "expected": "reject",
+        "actual": "reject"
+      }
+    ]
+  },
+  "secret_scan": {
+    "tracked_secret_files": 0,
+    "findings_in_reachable_git_history": 0,
+    "env_example": "template with empty credential fields"
+  },
+  "deployment_performed": false
+}
