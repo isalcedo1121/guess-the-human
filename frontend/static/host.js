@@ -1,4 +1,5 @@
 import {requestJSON} from "./api.js";
+import {unlockSounds, playSound, playWrong} from "./sounds.js";
 const questionSelect = document.getElementById("question-select");
 const customQuestion = document.getElementById("custom-question");
 const customField = document.getElementById("custom-question-field");
@@ -54,12 +55,16 @@ $("setup-form").addEventListener("submit",async event=>{
  catch(e){message("setup-error",e.message);}finally{busy=false;$("create-room").disabled=false;}
 });
 async function action(name,body={}){
- if(busy||!room)return;busy=true;clearTimeout(timer);message("game-error");message("lobby-error");
+ if(busy||!room)return;unlockSounds();busy=true;clearTimeout(timer);message("game-error");message("lobby-error");
  document.querySelectorAll("[data-action],[data-guess],#add-samples,#start-game,#close-room").forEach(x=>x.disabled=true);
  if(name==="begin")screen("generating");
- try{const data=await requestJSON(`/api/rooms/${room.id}/${name}`,{method:"POST",body:JSON.stringify(body)});busy=false;render(data);}
+ try{const data=await requestJSON(`/api/rooms/${room.id}/${name}`,{method:"POST",body:JSON.stringify(body)});playTransitionSound(name,room,data);busy=false;render(data);}
  catch(e){busy=false;try{render(await requestJSON(`/api/rooms/${room.id}/host`));}catch{render(room);}message("game-error",e.message);}
  finally{busy=false;document.querySelectorAll("[data-action],[data-guess],#add-samples,#start-game").forEach(x=>x.disabled=false);$("close-room").disabled=room.status!=="open";$("start-game").disabled=room.submission_count===0;}
+}
+function playTransitionSound(action,previous,next){
+ if(next.status==="finished"&&previous.status!=="finished")playSound(next.game.assessed>0&&next.game.accuracy>=70?"win":"lose");
+ else if(action==="guess"&&!previous.game?.revealed&&next.game?.revealed){if(next.game.current.correct)playSound("correct");else playWrong();}
 }
 $("close-room").addEventListener("click",()=>action("close"));
 $("start-game").addEventListener("click",()=>action("begin"));

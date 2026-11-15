@@ -68,7 +68,11 @@ correct/incorrect markers. Gemini returns a short, active first-person writing n
 describing how that answer uses its assigned writing style. Notes are checked for
 repetition and appear only on results; they are descriptions of the finished text,
 not hidden model reasoning. Older games use brief style summaries. Word hover and confetti follow the reference and
-respect reduced-motion settings. Sounds remain off.
+respect reduced-motion settings. The original six sound effects play on the host
+page: a correct-answer sound, three wrong-answer sounds in rotation, and a win
+or loss sound on results (70% accuracy to win). They follow successful actions,
+so polling and page reloads do not replay them. Blocked audio does not interrupt
+the game. The files are served locally from `frontend/static/sounds/`.
 
 ## Render configuration (deployment is separate)
 
@@ -132,15 +136,18 @@ python -m pytest -p no:cacheprovider
 node --test tests/*.test.cjs
 node --check frontend/static/host.js
 node --check frontend/static/participant.js
+node --check frontend/static/sounds.js
 ```
 
-Actual results: **36 Python tests passed**, **4 JavaScript tests passed**, syntax
+Actual results: **37 Python tests passed**, **8 JavaScript tests passed**, syntax
 checks passed. Python tests use explicitly mocked AI data for scoring and failures.
 The JS tests execute the actual host and submission scripts with DOM/network
 doubles, checking preset/custom room creation against the real HTML element IDs,
 retained submission text, stable retry IDs, completion only after acknowledgement,
-and safe rendering of individual writing notes.
-These are not rendered-browser tests.
+safe rendering of individual writing notes, sound selection/rotation, silent
+audio priming and harmless playback rejection.
+These are not rendered-browser tests. Browser preview access was unavailable;
+audible playback and the final results layout still need a manual browser check.
 
 Run the live example against your configured free-tier services:
 

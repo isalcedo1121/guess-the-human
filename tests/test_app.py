@@ -92,3 +92,11 @@ def test_presets_are_in_the_initial_html_and_custom_is_last(client):
     assert 'human answers ·' not in page.text
     assert page.headers['cache-control']=='no-store'
     assert client.get('/static/host.js').headers['cache-control']=='no-store'
+
+
+def test_game_sound_files_are_served_as_audio(client):
+    for key in ('correct', 'wrong1', 'wrong2', 'wrong3', 'win', 'lose'):
+        response = client.get(f'/static/sounds/{key}.mp3')
+        assert response.status_code == 200
+        assert response.headers['content-type'] == 'audio/mpeg'
+        assert len(response.content) > 9000
