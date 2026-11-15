@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="only light">
+    <meta name="theme-color" content="#5634b9">
+    <title>Your answer · Guess the Human</title>
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="/static/participant.js" type="module"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Guess the Human home"><span class="mark" aria-hidden="true">?</span> GUESS THE HUMAN</a>
+    </header>
+    <main id="main">
+      <div class="hero"><h1>Your <em>answer!</em></h1></div>
+      <section class="card narrow" aria-label="Anonymous answer form">
+        <div class="question-card first"><p class="overline">Question</p><p class="question"></p></div>
+        <form id="answer-form">
+          <label class="field-label" for="submission">Your answer</label>
+          <textarea class="text-entry" id="submission" name="answer" minlength="2" maxlength="280"
+            placeholder="Type your answer…" aria-describedby="answer-note char-count" required></textarea>
+          <p id="answer-note" class="field-note">Keep it anonymous. Leave out names and personal details.</p>
+          <div class="actions">
+            <span class="char-count" id="char-count"><span id="character-total">0</span> / 280</span>
+            <button class="btn primary" type="submit" disabled>Submit →</button>
+          </div>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>

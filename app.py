@@ -4,8 +4,12 @@ import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
-from backend.config import Settings
+from backend.config import PROJECT_ROOT, Settings
+
+FRONTEND_DIR = PROJECT_ROOT / "frontend"
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -24,6 +28,18 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         description="A host-led Human or AI guessing game.",
         lifespan=lifespan,
     )
+    application.mount(
+        "/static", StaticFiles(directory=FRONTEND_DIR / "static"), name="static"
+    )
+
+    @application.get("/", include_in_schema=False)
+    def host_page() -> FileResponse:
+        return FileResponse(FRONTEND_DIR / "host.html")
+
+    @application.get("/participant-preview", include_in_schema=False)
+    def participant_preview() -> FileResponse:
+        """Serve the form layout without creating or claiming a real room."""
+        return FileResponse(FRONTEND_DIR / "participant.html")
 
     @application.get("/health", tags=["status"])
     def health() -> dict[str, str]:
