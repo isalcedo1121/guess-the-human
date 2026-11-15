@@ -1,0 +1,167 @@
+{
+  "mode": "real Firestore and real Gemini; synthetic human inputs",
+  "examples": [
+    {
+      "input": [
+        "I take a walk then come back with coffee.",
+        "print every variable until the bug confesses",
+        "I ask my rubber duck to review the loop.",
+        "undo the last change and run it again",
+        "I read the error twice and check the docs"
+      ],
+      "accepted_count": 5,
+      "duplicate_retries": "count remains 5",
+      "independent_sessions": 5
+    },
+    {
+      "model": "gemini-3.5-flash-lite",
+      "real_ai_outputs": [
+        {
+          "actual": "ai",
+          "level": 2,
+          "id": "08a5b5e685dd487d882dc588574c63ec",
+          "style": "Chameleon",
+          "text": "I scan the terminal log carefully and trace the logic"
+        },
+        {
+          "actual": "ai",
+          "level": 3,
+          "id": "85c8586ec793454ca9bc402d8cb89d47",
+          "style": "Chameleon",
+          "text": "step away from the screen until the answer appears"
+        },
+        {
+          "actual": "ai",
+          "level": 2,
+          "id": "159fe260355545629d0310a93f65f828",
+          "style": "Basic",
+          "text": "When code does not work, one can analyze error messages, review the logic step by step, and test hypotheses to identify and fix the bug."
+        },
+        {
+          "actual": "ai",
+          "level": 2,
+          "id": "e8658e24fde84da3849e18c37992910d",
+          "style": "Slang",
+          "text": "When my code is totally broken, I usually take a step back, grab some water, and patiently re-read the error messages to find the bug."
+        },
+        {
+          "actual": "ai",
+          "level": 2,
+          "id": "d0728de5dca84d95a101ed37fd040f22",
+          "style": "Basic",
+          "text": "Debugging involves checking the code for syntax errors, using print statements or debuggers to track variables, and verifying assumptions about how the program executes."
+        }
+      ]
+    },
+    {
+      "guesses": "human for every round",
+      "result": {
+        "current": null,
+        "revealed": true,
+        "total": 10,
+        "round": 10,
+        "correct": 5,
+        "incorrect": 5,
+        "assessed": 10,
+        "accuracy": 50,
+        "ai_caught": 0,
+        "ai_missed": 5,
+        "humans_accused": 0,
+        "history": [
+          {
+            "actual": "human",
+            "guess": "human",
+            "correct": true,
+            "level": 2,
+            "id": "8275150792f04ff589d397359dfb35df",
+            "style": null,
+            "text": "print every variable until the bug confesses"
+          },
+          {
+            "actual": "ai",
+            "guess": "human",
+            "correct": false,
+            "level": 2,
+            "id": "159fe260355545629d0310a93f65f828",
+            "style": "Basic",
+            "text": "When code does not work, one can analyze error messages, review the logic step by step, and test hypotheses to identify and fix the bug."
+          },
+          {
+            "actual": "human",
+            "guess": "human",
+            "correct": true,
+            "level": 2,
+            "id": "145fea98d9b5474e982138f340fec738",
+            "style": null,
+            "text": "I read the error twice and check the docs"
+          },
+          {
+            "actual": "ai",
+            "guess": "human",
+            "correct": false,
+            "level": 2,
+            "id": "d0728de5dca84d95a101ed37fd040f22",
+            "style": "Basic",
+            "text": "Debugging involves checking the code for syntax errors, using print statements or debuggers to track variables, and verifying assumptions about how the program executes."
+          },
+          {
+            "actual": "ai",
+            "guess": "human",
+            "correct": false,
+            "level": 2,
+            "id": "e8658e24fde84da3849e18c37992910d",
+            "style": "Slang",
+            "text": "When my code is totally broken, I usually take a step back, grab some water, and patiently re-read the error messages to find the bug."
+          },
+          {
+            "actual": "human",
+            "guess": "human",
+            "correct": true,
+            "level": 2,
+            "id": "963581d876584f2b8fc3c7fe4bc33caa",
+            "style": null,
+            "text": "undo the last change and run it again"
+          },
+          {
+            "actual": "ai",
+            "guess": "human",
+            "correct": false,
+            "level": 2,
+            "id": "08a5b5e685dd487d882dc588574c63ec",
+            "style": "Chameleon",
+            "text": "I scan the terminal log carefully and trace the logic"
+          },
+          {
+            "actual": "human",
+            "guess": "human",
+            "correct": true,
+            "level": 2,
+            "id": "c689aa89d6984a0ab80d199aeb4dec54",
+            "style": null,
+            "text": "I ask my rubber duck to review the loop."
+          },
+          {
+            "actual": "human",
+            "guess": "human",
+            "correct": true,
+            "level": 2,
+            "id": "cb1a2427893c4ddb8040fc582eaa77ea",
+            "style": null,
+            "text": "I take a walk then come back with coffee."
+          },
+          {
+            "actual": "ai",
+            "guess": "human",
+            "correct": false,
+            "level": 3,
+            "id": "85c8586ec793454ca9bc402d8cb89d47",
+            "style": "Chameleon",
+            "text": "step away from the screen until the answer appears"
+          }
+        ]
+      }
+    }
+  ],
+  "generation_status": 200,
+  "end_to_end": "passed"
+}

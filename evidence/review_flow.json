@@ -1,0 +1,15 @@
+{
+  "host_samples": "3 accepted; repeated addition stays at 3",
+  "start_game": "open room -> generating -> playing in one request",
+  "rounds": 6,
+  "correct": 3,
+  "incorrect": 3,
+  "accuracy": 50,
+  "ai_explanations": 3,
+  "result": "passed",
+  "room_creation": {
+    "preset": "201; authenticated lobby 200",
+    "custom": "201; authenticated lobby 200",
+    "temporary_rooms_removed": 2
+  }
+}

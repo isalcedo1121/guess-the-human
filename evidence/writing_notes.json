@@ -1,0 +1,38 @@
+{
+  "model": "gemini-3.5-flash-lite",
+  "question": "What's the worst excuse you could give to a professor for missing an assignment?",
+  "generated_answers": [
+    {
+      "text": "Claiming your homework was accidentally shredded by a neighbor's goat that escaped into your apartment building.",
+      "style": "Basic",
+      "level": 2,
+      "explanation": "I used an absurd animal intrusion scenario involving a goat in an apartment building."
+    },
+    {
+      "text": "Stating that you forgot you were enrolled in the course until seeing the final grades posted online.",
+      "style": "Basic",
+      "level": 2,
+      "explanation": "I went with a forgetfulness angle about entirely missing the existence of the class."
+    },
+    {
+      "text": "I accidentally mailed my flash drive inside a coconut to a remote island tribe.",
+      "style": "Chameleon",
+      "level": 2,
+      "explanation": "I used the eccentric image of a tropical coconut to build an absurd delivery mishap."
+    },
+    {
+      "text": "My smart toaster hacked my laptop and burned the assignment file for toast.",
+      "style": "Chameleon",
+      "level": 2,
+      "explanation": "I went with a humorous household appliance rebellion to create a digital disaster."
+    },
+    {
+      "text": "Honestly, Professor, my smart fridge locked me out of the kitchen until I finished eating all the leftover birthday cake, so I completely lost track of my essay.",
+      "style": "Slang",
+      "level": 2,
+      "explanation": "I used a modern household appliance malfunction to create an absurdly specific and relatable distraction."
+    }
+  ],
+  "distinct_notes": 5,
+  "result": "passed"
+}

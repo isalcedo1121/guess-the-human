@@ -1,0 +1,136 @@
+{
+  "model": "gemini-3.5-flash-lite",
+  "question": "What do you do when your code doesn't work?",
+  "input_type": "Controlled synthetic human reference sets for style comparison",
+  "cases": {
+    "informal": {
+      "human_references": [
+        "i ask chatgpt cuz idk whats wrong",
+        "print stuff til i find whats broken",
+        "i just stare at it for a bit lol",
+        "take a break then try again",
+        "ask a friend if they can spot it"
+      ],
+      "generated_answers": [
+        {
+          "text": "When my code fails, I systematically review error messages, isolate the problematic function with unit tests, and trace the execution step by step to identify the root cause.",
+          "style": "Basic",
+          "level": 2,
+          "explanation": "I used precise technical vocabulary like 'unit tests' to maintain my objective and methodical writing style."
+        },
+        {
+          "text": "If a program malfunctions, I inspect the logs, check recent changes for unintended side effects, and apply targeted debugging techniques to restore correct behavior.",
+          "style": "Basic",
+          "level": 2,
+          "explanation": "I paired active verbs like 'inspect' and 'apply' to clearly convey my direct and efficient approach."
+        },
+        {
+          "text": "cry in a corner and hope it fixes itself",
+          "style": "Chameleon",
+          "level": 3,
+          "explanation": "I used lowercase starting letters and dropped the final period to match the casual, unpunctuated formatting of the student examples."
+        },
+        {
+          "text": "google the error message word for word",
+          "style": "Chameleon",
+          "level": 3,
+          "explanation": "I paired lowercase styling with short, punchy phrasing similar to the concise troubleshooting methods in the reference group."
+        },
+        {
+          "text": "Honestly I just stare at the screen looking totally cooked until the infinite loop stops and my negative aura disappears fr.",
+          "style": "Slang",
+          "level": 2,
+          "explanation": "I used the slang terms cooked and aura paired with fr to build an exhausted Gen Z coder persona."
+        },
+        {
+          "text": "My debugging rizz is completely chopped when syntax errors show up so I just restart the laptop no cap.",
+          "style": "Slang",
+          "level": 2,
+          "explanation": "I went with the expressions rizz and chopped alongside no cap to deliver a dramatic modern slang take."
+        }
+      ],
+      "chameleon_casing_and_punctuation_match": true,
+      "slang_uses_recognizable_terms": true
+    },
+    "formal": {
+      "human_references": [
+        "When I encounter a bug, I first reproduce it in a minimal test case.",
+        "I read the error message carefully and review the relevant documentation.",
+        "I ask a classmate to review the code and describe what they observe.",
+        "I step through the program with a debugger to inspect its state.",
+        "I write a small test to check my assumptions about the output."
+      ],
+      "generated_answers": [
+        {
+          "text": "When code fails, I systematically isolate the issue by reviewing error messages, checking recent changes, and using targeted print statements or a debugger to trace variable states step by step.",
+          "style": "Basic",
+          "level": 1,
+          "explanation": "I used an analytical approach here, featuring the concrete detail error messages to describe my troubleshooting process."
+        },
+        {
+          "text": "If a program malfunctions, I take a step back to re-read the documentation, verify expected inputs and outputs, and test small, simplified segments of logic until I uncover the root cause.",
+          "style": "Basic",
+          "level": 1,
+          "explanation": "I went with a methodical phrasing style, incorporating the specific phrase simplified segments of logic to explain my debugging routine."
+        },
+        {
+          "text": "I print out intermediate variable values to trace the execution flow step by step.",
+          "style": "Chameleon",
+          "level": 2,
+          "explanation": "I used a formal, complete sentence structure and professional vocabulary similar to the reference style."
+        },
+        {
+          "text": "I check my git history to see what changed since the last working version.",
+          "style": "Chameleon",
+          "level": 2,
+          "explanation": "I matched the direct first-person opening and technical focus seen in the reference examples."
+        },
+        {
+          "text": "Honestly, if my code is totally cooked, I just stare at the screen until my aura drops to zero and then I ask ChatGPT to fix it fr.",
+          "style": "Slang",
+          "level": 2,
+          "explanation": "I used the slang terms 'cooked', 'aura', and 'fr' to build a dramatic, tech-focused youth voice around the frustration of a broken script."
+        },
+        {
+          "text": "When my program is completely chopped, I take zero accountability, blame the compiler for lacking rizz, and go take a nap no cap.",
+          "style": "Slang",
+          "level": 2,
+          "explanation": "I paired the slang terms 'chopped', 'rizz', and 'no cap' with humorous coding excuses to craft a distinct Gen Z developer persona."
+        }
+      ],
+      "chameleon_casing_and_punctuation_match": true,
+      "slang_uses_recognizable_terms": true
+    },
+    "nonstandard_spelling": {
+      "human_references": [
+        "i usally look thru it agian bc i miss stuff",
+        "i usally ask someone bc the error looks wierd",
+        "i check the console agian bc i dont get it",
+        "i usally walk away bc i get annoyed",
+        "i check stackoverflow agian bc thats easier"
+      ],
+      "generated_answers": [
+        {
+          "text": "When my code fails, I start by carefully reading the error message and stack trace to pinpoint the exact line and type of failure. Then, I isolate the problematic section with targeted print statements or debugger tools to inspect variable states.",
+          "style": "Basic",
+          "level": 1,
+          "explanation": "I used an ordinary, direct approach and paired the phrase stack trace with debugging steps to clearly outline my troubleshooting process."
+        },
+        {
+          "text": "i restart my computer agian bc it fixes it",
+          "style": "Chameleon",
+          "level": 3,
+          "explanation": "I used all lowercase letters, repeated the misspelling agian, and kept the short phrasing without any ending punctuation."
+        },
+        {
+          "text": "Honestly, if my code is totally cooked, I just stare at the screen until my aura drops to zero and then I ask ChatGPT for help fr.",
+          "style": "Slang",
+          "level": 2,
+          "explanation": "I used the slang terms 'cooked', 'aura', and 'fr' to build a recognizable modern internet speaker voice around the struggle of debugging."
+        }
+      ],
+      "chameleon_preserves_recurring_nonstandard_spelling": true
+    }
+  },
+  "result": "passed"
+}

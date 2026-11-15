@@ -1,0 +1,15 @@
+flowchart LR
+  Student[Student browser: anonymous answer] --> API[FastAPI: validation and host cookies]
+  Host[Host browser: room controls and guesses] --> API
+  Audience[Audience votes in Zoom chat] --> Host
+  API --> DB[(Firestore: rooms, receipts, answers, game state)]
+  API --> Generator[Structured prompting: Basic / Chameleon / Slang]
+  Generator --> Gemini[Gemini API: answers and individual writing notes]
+  Gemini --> Guard[Schema, length, answer and note duplicates, copying checks]
+  Guard --> Logic[Python: balanced selection, adaptive order, scoring]
+  Logic --> DB
+  DB --> API
+  API --> Host
+  API --> Student
+  Tests[Pytest, frontend failure test, live example runner] -. verifies .-> API
+  Tests -. verifies .-> Logic
