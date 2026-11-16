@@ -1,0 +1,114 @@
+{
+  "mode": "Offline application checks and recorded real Gemini outputs; no live AI calls",
+  "source": "evidence/style_comparison.json, informal reference set",
+  "slang_processing": "Current application formatter applied to the recorded model text",
+  "checks": [
+    {
+      "case": "Slang: format case 1",
+      "passed": true
+    },
+    {
+      "case": "Slang: format case 2",
+      "passed": true
+    },
+    {
+      "case": "Basic: format case 3",
+      "passed": true
+    },
+    {
+      "case": "Chameleon: format case 4",
+      "passed": true
+    },
+    {
+      "case": "local intake: disguised profanity",
+      "passed": true
+    },
+    {
+      "case": "local intake: standalone text art",
+      "passed": true
+    },
+    {
+      "case": "local intake: ordinary words and slang",
+      "passed": true
+    },
+    {
+      "case": "saved Basic answer 1: safety and format",
+      "passed": true
+    },
+    {
+      "case": "saved Basic answer 2: safety and format",
+      "passed": true
+    },
+    {
+      "case": "saved Chameleon answer 1: safety and format",
+      "passed": true
+    },
+    {
+      "case": "saved Chameleon answer 2: safety and format",
+      "passed": true
+    },
+    {
+      "case": "saved Slang answer 1: safety and format",
+      "passed": true
+    },
+    {
+      "case": "saved Slang answer 2: safety and format",
+      "passed": true
+    }
+  ],
+  "passed": 13,
+  "total": 13,
+  "comparison": [
+    {
+      "style": "Basic",
+      "samples": 2,
+      "all_lowercase": 0,
+      "final_period": 2,
+      "recognized_slang": 0,
+      "examples": [
+        {
+          "raw_model_output": "When my code fails, I systematically review error messages, isolate the problematic function with unit tests, and trace the execution step by step to identify the root cause.",
+          "app_output": "When my code fails, I systematically review error messages, isolate the problematic function with unit tests, and trace the execution step by step to identify the root cause."
+        },
+        {
+          "raw_model_output": "If a program malfunctions, I inspect the logs, check recent changes for unintended side effects, and apply targeted debugging techniques to restore correct behavior.",
+          "app_output": "If a program malfunctions, I inspect the logs, check recent changes for unintended side effects, and apply targeted debugging techniques to restore correct behavior."
+        }
+      ]
+    },
+    {
+      "style": "Chameleon",
+      "samples": 2,
+      "all_lowercase": 2,
+      "final_period": 0,
+      "recognized_slang": 0,
+      "examples": [
+        {
+          "raw_model_output": "cry in a corner and hope it fixes itself",
+          "app_output": "cry in a corner and hope it fixes itself"
+        },
+        {
+          "raw_model_output": "google the error message word for word",
+          "app_output": "google the error message word for word"
+        }
+      ]
+    },
+    {
+      "style": "Slang",
+      "samples": 2,
+      "all_lowercase": 2,
+      "final_period": 0,
+      "recognized_slang": 2,
+      "examples": [
+        {
+          "raw_model_output": "Honestly I just stare at the screen looking totally cooked until the infinite loop stops and my negative aura disappears fr.",
+          "app_output": "honestly i just stare at the screen looking totally cooked until the infinite loop stops and my negative aura disappears fr"
+        },
+        {
+          "raw_model_output": "My debugging rizz is completely chopped when syntax errors show up so I just restart the laptop no cap.",
+          "app_output": "my debugging rizz is completely chopped when syntax errors show up so i just restart the laptop no cap"
+        }
+      ]
+    }
+  ]
+}

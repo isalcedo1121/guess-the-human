@@ -120,7 +120,7 @@ before they can be included in a deployment.
 The three AI versions have separate generation instructions:
 
 - **Basic:** the model’s ordinary response to the question, with no student answers in its prompt.
-- **Slang:** a modern Gen Alpha / Gen Z internet voice with recognizable terms such as “cooked” or “chopped”; no student answers in its prompt.
+- **Slang:** a casual Gen Alpha / Gen Z internet voice with recognizable terms such as “cooked” or “chopped”, lowercase answers and no final period; no student answers in its prompt.
 - **Chameleon:** all collected human answers as style references, preserving their tone, length, casing, punctuation, abbreviations and recurring misspellings in new content. It does not polish away informal habits or invent mistakes absent from the references.
 
 Each writing note describes that version’s approach in the individual answer.
@@ -188,7 +188,7 @@ node --check frontend/static/participant.js
 node --check frontend/static/sounds.js
 ```
 
-Actual results: **80 Python tests passed**, **8 JavaScript tests passed**, syntax
+Actual results: **84 Python tests passed**, **8 JavaScript tests passed**, syntax
 checks passed. Python tests use explicitly mocked AI data for scoring and failures.
 The JS tests execute the actual host and submission scripts with DOM/network
 doubles, checking preset/custom room creation against the real HTML element IDs,
@@ -210,11 +210,35 @@ scores all rounds, and removes only its own test room. It writes
 [evidence/live_examples.json](evidence/live_examples.json). It uses your service
 quotas and model wording may vary. No credentials or host cookies are recorded.
 
+### Small offline evaluation
+
+```sh
+python scripts/evaluate.py
+```
+
+Actual summary:
+
+```text
+Summary: 13/13 passed; 0 failed
+Basic: lowercase 0/2; final period 2/2; slang 0/2
+Chameleon: lowercase 2/2; final period 0/2; slang 0/2
+Slang: lowercase 2/2; final period 0/2; slang 2/2
+```
+
+This checks predefined formatting/intake cases and real saved AI outputs. It
+prints a pass/fail summary, returns a nonzero exit code on failure, and writes
+[evidence/style_evaluation.json](evidence/style_evaluation.json). It uses no API
+calls. The [baseline comparison in the model card](model_card.md#baseline-vs-specialized-answers)
+shows the measurable style differences. Contextual Gemini screening is covered
+by the separate live screening evidence; this offline runner checks local rules.
+
 ### Three input/output examples
 
 The app uses all three styles automatically. These are real saved Gemini outputs
 from [the style comparison](evidence/style_comparison.json), with the question
-and model inputs shown together. Wording can change from game to game.
+and model inputs shown together. The Slang example uses the saved text with
+the current lowercase/no-final-period formatting applied. Wording can change
+from game to game.
 
 ```text
 Example 1 — Basic
@@ -240,7 +264,7 @@ Writing note: I used all lowercase letters, repeated the misspelling agian, and 
 Example 3 — Slang
 Question: What do you do when your code doesn't work?
 Model input: the question and Gen Alpha / Gen Z slang instructions; no student answers.
-AI output: My debugging rizz is completely chopped when syntax errors show up so I just restart the laptop no cap.
+AI output: my debugging rizz is completely chopped when syntax errors show up so i just restart the laptop no cap
 ```
 
 Here is the full-game result from `python scripts/run_examples.py`, recorded in
@@ -305,7 +329,7 @@ above give separate, repeatable evidence.
 
 ## Deployment-readiness verification
 
-The current checks are recorded in
+The earlier deployment-readiness checks are recorded in
 [evidence/deployment_readiness.json](evidence/deployment_readiness.json).
 A separate clean source copy and virtual environment used only `requirements.txt`,
 with `APP_ENV=production`, inline Firebase JSON, and the Gemini key provided in

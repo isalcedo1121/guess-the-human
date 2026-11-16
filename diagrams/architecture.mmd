@@ -8,11 +8,11 @@ flowchart LR
   Clean --> DB
   Clean --> Generator["Basic / Slang: question only<br/>Chameleon: accepted human references"]
   Generator --> Gemini[Gemini API: answers and individual writing notes]
-  Gemini --> Guard[Schema, profanity, length, duplicates, copying checks]
+  Gemini --> Guard[Schema, Slang formatting, profanity, length, duplicates, copying checks]
   Guard --> Logic[Python: balanced selection, adaptive order, scoring]
   Logic --> DB
   DB --> API
   API --> Host
   API --> Student
-  Tests[Pytest, frontend failure test, live example runner] -. verifies .-> API
+  Tests[Pytest, frontend checks, offline eval, live example runner] -. verifies .-> API
   Tests -. verifies .-> Logic

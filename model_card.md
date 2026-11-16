@@ -13,6 +13,9 @@ There is no RAG index or fine-tuning; Chameleon gets examples in its prompt.
 Basic receives only the question and uses the model’s ordinary default writing
 style. Slang also receives no student answers; it explicitly uses recognizable
 Gen Alpha / Gen Z vocabulary such as “cooked”, “chopped”, “no cap” or “fr”.
+Slang answers use short, casual wording, all lowercase, and no final period.
+The prompt requests this, and a small formatter enforces it for Slang answer text.
+Writing notes keep their normal first-person format.
 Chameleon receives **all** collected human answers as untrusted reference data,
 with their original casing, punctuation and spelling. Its instructions match
 their tone, length, sentence structure, abbreviations, missing punctuation,
@@ -37,6 +40,36 @@ misspellings: Chameleon carries “agian” into fresh lowercase phrasing.
 The earlier creative-angle prompt in
 `evidence/writing_notes.json` is superseded; its generic Chameleon story notes
 were not an adequate demonstration of style matching.
+
+## Baseline vs specialized answers
+
+I compared two saved answers per style for the same coding question. Basic is
+the baseline. Chameleon had five informal reference answers; Basic and Slang
+had no human references. The original outputs are in
+[evidence/style_comparison.json](evidence/style_comparison.json).
+
+| Style | Samples | All lowercase | Ends with a period | Uses listed slang |
+| --- | --- | --- | --- | --- |
+| Basic (baseline) | 2 | 0/2 | 2/2 | 0/2 |
+| Chameleon | 2 | 2/2 | 0/2 | 0/2 |
+| Slang | 2 | 2/2 | 0/2 | 2/2 |
+
+Basic example: “If a program malfunctions, I inspect the logs, check recent changes for unintended side effects, and apply targeted debugging techniques to restore correct behavior.”
+
+Chameleon example: “google the error message word for word”
+
+Slang example: “my debugging rizz is completely chopped when syntax errors show up so i just restart the laptop no cap”
+
+The Slang counts include the current formatter applied to the saved model text;
+the original capitalized versions are kept in the evidence. “Listed slang” checks
+for cooked, chopped, no cap, fr, rizz or aura. These are small format/tone checks,
+not a measurement of how often people are fooled.
+
+Run `python scripts/evaluate.py` to reproduce the counts and 13 offline pass/fail
+checks. The latest results are in
+[evidence/style_evaluation.json](evidence/style_evaluation.json). This supports
+the specialization and evaluation-script stretch items without adding new game
+screens or services.
 
 ## Limitations and biases
 
