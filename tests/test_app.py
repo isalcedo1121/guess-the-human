@@ -100,3 +100,18 @@ def test_game_sound_files_are_served_as_audio(client):
         assert response.status_code == 200
         assert response.headers['content-type'] == 'audio/mpeg'
         assert len(response.content) > 9000
+
+
+def test_project_links_open_in_new_tabs_without_extra_architecture_page(client):
+    class Links(HTMLParser):
+        def __init__(self):super().__init__();self.links=[]
+        def handle_starttag(self,tag,attrs):
+            if tag=='a':self.links.append(dict(attrs))
+    parser=Links();parser.feed(client.get('/').text)
+    for href in ('https://github.com/isalcedo1121/guess-the-human/blob/main/diagrams/architecture.mmd',
+                 'https://github.com/isalcedo1121/guess-the-human'):
+        link=next(link for link in parser.links if link.get('href')==href)
+        assert link['target']=='_blank'
+        assert {'noopener','noreferrer'} <= set(link['rel'].split())
+    assert client.get('/architecture').status_code==404
+    assert client.get('/static/architecture.svg').status_code==404

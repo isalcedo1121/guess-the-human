@@ -10,6 +10,7 @@
     <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="/static/styles.css">
     <script src="/static/host.js" type="module"></script>
+    <script src="/static/project-info.js" type="module"></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -17,7 +18,28 @@
       <a class="brand" href="/" aria-label="Guess the Human home">
         <span class="mark" aria-hidden="true">?</span> GUESS THE HUMAN
       </a>
-      <a id="new-game" class="top-new" href="/" hidden>New game</a>
+      <div class="top-actions">
+        <a id="new-game" class="top-new" href="/" hidden>New game</a>
+        <div id="project-info" class="project-info">
+          <button id="project-info-trigger" class="info-button" type="button"
+            aria-label="Project information" aria-expanded="false" aria-controls="project-info-panel">i</button>
+          <section id="project-info-panel" class="project-info-panel" aria-label="Project information" hidden>
+            <div class="project-info-card">
+              <dl class="project-stack">
+                <div><dt>Front end</dt><dd>HTML, CSS &amp; JavaScript</dd></div>
+                <div><dt>Back end</dt><dd>Python &amp; FastAPI</dd></div>
+                <div><dt>Database</dt><dd>Firebase Firestore</dd></div>
+                <div><dt>AI</dt><dd>Gemini</dd></div>
+                <div><dt>Hosting</dt><dd>Render</dd></div>
+              </dl>
+              <div class="project-links">
+                <a href="https://github.com/isalcedo1121/guess-the-human" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+                <a href="https://github.com/isalcedo1121/guess-the-human/blob/main/diagrams/architecture.mmd" target="_blank" rel="noopener noreferrer">Architecture ↗</a>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
     </header>
 
     <main id="main">
