@@ -6,7 +6,7 @@ from pydantic import ValidationError
 
 from backend.config import Settings
 from backend.game import act, prepare, view
-from backend.generation import Batch, GeneratedAnswer, generate, validate_notes, validate_outputs
+from backend.generation import Batch, GeneratedAnswer, format_answer, generate, validate_notes, validate_outputs
 
 
 def test_generation_pairs_each_answer_with_its_own_note_and_isolates_references():
@@ -19,7 +19,7 @@ def test_generation_pairs_each_answer_with_its_own_note_and_isolates_references(
             {"text": "i submitted my grocery list instead", "explanation": "I matched the human responses' lowercase opening and missing final punctuation."},
             {"text": "my upload didnt go thru lol", "explanation": "I used the students' short phrasing and informal spellings 'didnt' and 'thru'."},
         ],
-        [{"text": "the deadline speedran past me fr", "explanation": "I combined a gaming verb with the casual shorthand 'fr'."}],
+        [{"text": "The deadline speedran past me FR.", "explanation": "I combined a gaming verb with the casual shorthand 'fr'."}],
     ]
     client = Mock()
     client.models.generate_content.side_effect = [Mock(text=json.dumps({"answers": batch})) for batch in batches]
@@ -29,6 +29,9 @@ def test_generation_pairs_each_answer_with_its_own_note_and_isolates_references(
         rows = generate(Settings(_env_file=None, gemini_api_key="test-placeholder"), "Why?", humans, 5)
 
     assert [row["explanation"] for row in rows] == [item["explanation"] for batch in batches for item in batch]
+    assert rows[0]['text']==batches[0][0]['text']
+    assert rows[2]['text']==batches[1][0]['text']
+    assert rows[-1]['text']=='the deadline speedran past me fr'
     prompts = [call.kwargs["contents"] for call in client.models.generate_content.call_args_list]
     assert ["Human reference data:" in prompt for prompt in prompts] == [False, True, False]
     assert json.loads(prompts[1].split('\nHuman reference data: ', 1)[1]) == humans
@@ -48,6 +51,18 @@ def test_generation_pairs_each_answer_with_its_own_note_and_isolates_references(
         assert "explanation" not in view(state)["current"]
         act(state, "next", answer["id"])
     assert {row["explanation"] for row in view(state)["history"] if row["actual"] == "ai"} == {row["explanation"] for row in rows}
+
+
+@pytest.mark.parametrize('raw,expected', [
+    ('BRO IM COOKED.', 'bro im cooked'),
+    ('I asked ChatGPT...', 'i asked chatgpt'),
+    ('no cap?', 'no cap?'),
+    (' cooked…  ', 'cooked'),
+])
+def test_only_slang_gets_lowercase_and_loses_the_final_period(raw,expected):
+    assert format_answer('Slang',raw)==expected
+    assert format_answer('Basic',raw)==raw
+    assert format_answer('Chameleon',raw)==raw
 
 
 @pytest.mark.parametrize("note", ["", "x" * 201])

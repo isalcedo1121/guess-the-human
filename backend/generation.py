@@ -25,6 +25,12 @@ class Batch(BaseModel):
     answers: list[GeneratedAnswer] = Field(min_length=1)
 
 
+def format_answer(style, text):
+    if style == 'Slang':
+        return text.strip().lower().rstrip('.…。． \t\r\n')
+    return text
+
+
 def validate_outputs(texts, humans, seen):
     from backend.moderation import contains_profanity, contains_text_art
     result=[]
@@ -85,6 +91,9 @@ def generate(settings, question, humans, count):
         ),
         'Slang': (
             'Write like a modern internet speaker using recognizable Gen Alpha and Gen Z slang. '
+            'Use short, casual message wording instead of academic or essay-like phrasing. '
+            'Write the answer text entirely in lowercase, including "i" and names, with no final period. '
+            'Keep the writing note in normal first-person form starting with "I ". '
             'Include at least one clear slang expression in EACH answer, such as "cooked", "chopped", '
             '"no cap", "fr", "rizz", or "aura", choosing words that fit the question. '
             'Casual wording alone is not sufficient; the slang should be apparent. '
@@ -125,7 +134,7 @@ def generate(settings, question, humans, count):
                         time.sleep(1)
                 batch=Batch.model_validate_json(response.text)
                 if len(batch.answers)!=n: raise ValueError('Wrong answer count.')
-                texts = validate_outputs([answer.text for answer in batch.answers], humans, seen)
+                texts = validate_outputs([format_answer(style,answer.text) for answer in batch.answers], humans, seen)
                 notes = validate_notes(batch.answers, seen_notes)
                 for text, note in zip(texts, notes):
                     # A transparent heuristic, not an empirically calibrated difficulty score.
