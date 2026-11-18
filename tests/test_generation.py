@@ -6,7 +6,7 @@ from pydantic import ValidationError
 
 from backend.config import Settings
 from backend.game import act, prepare, view
-from backend.generation import Batch, GeneratedAnswer, format_answer, generate, validate_notes, validate_outputs
+from backend.generation import Batch, GeneratedAnswer, format_answer, generate, show_reference, validate_notes, validate_outputs
 
 
 def test_generation_pairs_each_answer_with_its_own_note_and_isolates_references():
@@ -16,8 +16,8 @@ def test_generation_pairs_each_answer_with_its_own_note_and_isolates_references(
             {"text": "I forgot to upload the file before class.", "explanation": "I went with a brief, straightforward statement about forgetting the upload."},
         ],
         [
-            {"text": "i submitted my grocery list instead", "explanation": "I matched the human responses' lowercase opening and missing final punctuation."},
-            {"text": "my upload didnt go thru lol", "explanation": "I used the students' short phrasing and informal spellings 'didnt' and 'thru'."},
+            {"text": "i submitted my grocery list instead", "explanation": "I matched the lowercase opening and missing final punctuation.", "reference_excerpt": "i cant get this to work lol"},
+            {"text": "my upload didnt go thru lol", "explanation": "I used short phrasing and the informal spellings 'didnt' and 'thru'.", "reference_excerpt": "LAST ref didnt go thru"},
         ],
         [{"text": "The deadline speedran past me FR.", "explanation": "I combined a gaming verb with the casual shorthand 'fr'."}],
     ]
@@ -28,7 +28,13 @@ def test_generation_pairs_each_answer_with_its_own_note_and_isolates_references(
         provider.return_value.__enter__.return_value = client
         rows = generate(Settings(_env_file=None, gemini_api_key="test-placeholder"), "Why?", humans, 5)
 
-    assert [row["explanation"] for row in rows] == [item["explanation"] for batch in batches for item in batch]
+    expected_notes = [
+        show_reference(item['explanation'], item['reference_excerpt'], humans)
+        if 'reference_excerpt' in item else item['explanation']
+        for batch in batches for item in batch
+    ]
+    assert [row["explanation"] for row in rows] == expected_notes
+    assert all(len(note) <= 200 for note in expected_notes)
     assert rows[0]['text']==batches[0][0]['text']
     assert rows[2]['text']==batches[1][0]['text']
     assert rows[-1]['text']=='the deadline speedran past me fr'
@@ -38,6 +44,7 @@ def test_generation_pairs_each_answer_with_its_own_note_and_isolates_references(
     assert "usual default AI writing style" in prompts[0]
     assert "capitalization" in prompts[1] and "misspellings" in prompts[1]
     assert "missing punctuation" in prompts[1] and "rather than correcting" in prompts[1]
+    assert "Never invent or paraphrase the reference quote" in prompts[1]
     assert "Gen Alpha and Gen Z slang" in prompts[2] and '"cooked"' in prompts[2] and '"chopped"' in prompts[2]
     assert "at least one clear slang expression in EACH answer" in prompts[2]
     assert len({row["explanation"] for row in rows if row["style"] == "Chameleon"}) == 2
@@ -51,6 +58,16 @@ def test_generation_pairs_each_answer_with_its_own_note_and_isolates_references(
         assert "explanation" not in view(state)["current"]
         act(state, "next", answer["id"])
     assert {row["explanation"] for row in view(state)["history"] if row["actual"] == "ai"} == {row["explanation"] for row in rows}
+
+
+def test_chameleon_reference_shows_the_actual_example_and_rejects_invented_quotes():
+    humans = ['my dog ate my homework', 'i forgot it was due']
+    note = 'I matched the short, casual pet excuse.'
+    assert show_reference(note, 'my dog ate my homework', humans) == (
+        'I matched the short, casual pet excuse. Reference: “my dog ate my homework”.'
+    )
+    with pytest.raises(ValueError, match='quote an accepted human answer exactly'):
+        show_reference(note, 'my cat ate my homework', humans)
 
 
 @pytest.mark.parametrize('raw,expected', [

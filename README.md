@@ -188,7 +188,7 @@ node --check frontend/static/participant.js
 node --check frontend/static/sounds.js
 ```
 
-Actual results: **85 Python tests passed**, **12 JavaScript tests passed**, syntax
+Actual results: **86 Python tests passed**, **12 JavaScript tests passed**, syntax
 checks passed. Python tests use explicitly mocked AI data for scoring and failures.
 The JS tests execute the actual host and submission scripts with DOM/network
 doubles, checking preset/custom room creation against the real HTML element IDs,
